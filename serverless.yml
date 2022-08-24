@@ -1,0 +1,38 @@
+org: miaozhaod
+app: crowdfunding-sls
+service: crowdfunding-sls
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: ap-southeast-2
+  apiGateway:
+    binaryMediaTypes:
+      - "multipart/form-data"
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:*
+          Resource: "*"
+
+functions:
+  uploadFile:
+    handler: functions/uploadFile/index.handler
+    events:
+      - http:
+          path: /pixelfoto-avatar-upload
+          method: post
+          cors: true
+    environment:
+      BUCKET: pixelfoto-avatar-bucket
+
+resources:
+  Resources:
+    FileUploadBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: pixelfoto-avatar-bucket
+        AccessControl: PublicRead
